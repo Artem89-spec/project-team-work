@@ -4,6 +4,6 @@ import ru.projectteamwork.finance_recommendations.dto.RecommendationDTO;
 
 import java.util.List;
 
-public interface RecommendationService {
+public interface RecommendationsService {
     List<RecommendationDTO> getRecommendationsForUser(String userId);
 }
