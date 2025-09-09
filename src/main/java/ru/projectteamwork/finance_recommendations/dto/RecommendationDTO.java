@@ -1,25 +1,16 @@
 package ru.projectteamwork.finance_recommendations.dto;
 
 public class RecommendationDTO {
-    private final String name;
     private final String id;
+    private final String name;
     private final String text;
 
-    public RecommendationDTO(String name, String id, String text) {
-        this.name = name;
+    public RecommendationDTO(String id, String name, String text) {
         this.id = id;
+        this.name = name;
         this.text = text;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getText() {
-        return text;
-    }
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public String getText() { return text; }
 }
