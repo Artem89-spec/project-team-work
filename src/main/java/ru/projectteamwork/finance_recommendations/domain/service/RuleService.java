@@ -35,4 +35,9 @@ public class RuleService {
     public void deleteByProductId(UUID productId) {
         repo.deleteByProductId(productId);
     }
+
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public java.util.List<DynamicRule> findAllEntities() {
+        return repo.findAll();
+    }
 }
