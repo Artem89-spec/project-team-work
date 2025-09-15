@@ -1,4 +1,4 @@
-package ru.projectteamwork.finance_recommendations.сonfig;
+package ru.projectteamwork.finance_recommendations.config;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
