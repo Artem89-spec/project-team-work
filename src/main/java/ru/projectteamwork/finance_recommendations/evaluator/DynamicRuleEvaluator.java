@@ -11,18 +11,18 @@ import java.util.UUID;
 
 public class DynamicRuleEvaluator {
 
-    private static final ObjectMapper om = new ObjectMapper();
-    private final RecommendationsRepository repo;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private final RecommendationsRepository repository;
 
-    public DynamicRuleEvaluator(RecommendationsRepository repo) {
-        this.repo = repo;
+    public DynamicRuleEvaluator(RecommendationsRepository repository) {
+        this.repository = repository;
     }
 
     public boolean evaluate(DynamicRule rule, String userIdStr) {
         final UUID userId = UUID.fromString(userIdStr);
-        for (DynamicRuleQuery q : rule.getQueries()) {
-            boolean result = evalQuery(q, userId);
-            if (q.isNegate()) result = !result;
+        for (DynamicRuleQuery query  : rule.getQueries()) {
+            boolean result = evalQuery(query, userId);
+            if (query.isNegate()) result = !result;
             if (!result) return false;
         }
         return true;
@@ -35,46 +35,49 @@ public class DynamicRuleEvaluator {
         switch (type) {
             case "USER_OF": {
                 String productType = args.get(0);
-                return repo.existsTransactionsByProductType(userId, productType);
+                return repository.userHasProductType(userId, productType);
             }
             case "ACTIVE_USER_OF": {
                 String productType = args.get(0);
-                int count = repo.countTransactionsByProductType(userId, productType);
+                int count = repository.countTransactionsByProductType(userId, productType);
                 return count >= 5;
             }
             case "TRANSACTION_SUM_COMPARE": {
                 String productType = args.get(0);
-                String txType = args.get(1);
-                String op = args.get(2);
+                String transactionsType = args.get(1);
+                String operator = args.get(2);
                 int constant = Integer.parseInt(args.get(3));
-                int sum = repo.sumAmountByProductAndTxType(userId, productType, txType);
-                return compare(sum, op, constant);
+                int sum = repository.sumAmountByProductAndTxType(userId, productType, transactionsType);
+                return compare(sum, operator, constant);
             }
             case "TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW": {
                 String productType = args.get(0);
-                String op = args.get(1);
-                int deposits = repo.sumAmountByProductAndTxType(userId, productType, "DEPOSIT");
-                int withdraws = repo.sumAmountByProductAndTxType(userId, productType, "WITHDRAW");
-                return compare(deposits, op, withdraws);
+                String operator = args.get(1);
+                int deposits = repository.getSumIncomesByProductType(userId, productType);
+                int withdraws = repository.getSumExpensesByProductType(userId, productType);
+                return compare(deposits, operator, withdraws);
             }
             default:
-                throw new IllegalArgumentException("Unknown query type: " + type);
+                throw new IllegalArgumentException("Неизвестный тип запроса: " + type);
         }
     }
 
-    private boolean compare(int left, String op, int right) {
-        return switch (op) {
+    private boolean compare(int left, String operator, int right) {
+        return switch (operator) {
             case ">"  -> left > right;
             case "<"  -> left < right;
             case "="  -> left == right;
             case ">=" -> left >= right;
             case "<=" -> left <= right;
-            default   -> throw new IllegalArgumentException("Unsupported operator: " + op);
+            default   -> throw new IllegalArgumentException("Неизвестный оператор: " + operator);
         };
     }
 
     private static List<String> readArgs(String json) {
-        try { return om.readValue(json, new TypeReference<List<String>>(){}); }
-        catch (Exception e) { throw new RuntimeException("Invalid arguments JSON: " + json, e); }
+        try {
+            return OBJECT_MAPPER.readValue(json, new TypeReference<List<String>>(){});
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Недопустимые аргументы JSON: " + json, e); }
     }
 }
