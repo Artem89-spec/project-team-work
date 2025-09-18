@@ -9,4 +9,10 @@ public interface RecommendationsRepository {
 
     boolean userHasProductType(UUID userId, String productType);
 
+    int countTransactionsByProductType(UUID userId, String productType);
+
+    int sumAmountByProductAndTxType(UUID userId, String productType, String txType);
+
+
+
 }
