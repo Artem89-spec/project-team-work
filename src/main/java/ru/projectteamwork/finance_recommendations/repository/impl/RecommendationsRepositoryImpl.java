@@ -31,36 +31,20 @@ public class RecommendationsRepositoryImpl implements RecommendationsRepository 
     }
 
     @Override
-    public Integer getSumIncomesByProductType(UUID userId, String productType) {
-        final String key = (userId + " " + productType).toUpperCase();
+    public int sumAmountByProductAndTxType(UUID userId, String productType, String txType) {
+        final String key = (userId + " " + productType + " " + txType).toUpperCase();
         try {
             return sumCache.get(key, k -> {
-                final String sql = "SELECT COALESCE(SUM(amount), 0) " +
-                        "FROM transactions t INNER JOIN products p ON t.product_id = p.id " +
-                        "WHERE t.user_id = ? AND t.type = 'DEPOSIT' AND p.type = ?";
-                return jdbcTemplate.queryForObject(sql, Integer.class, userId, productType);
+                final String sql =
+                        "SELECT COALESCE(SUM(t.amount), 0) " +
+                                "FROM transactions t INNER JOIN products p ON t.product_id = p.id " +
+                                "WHERE t.user_id = ? AND UPPER(t.type) = UPPER(?) AND UPPER(p.type) = UPPER(?)";
+                Integer sum = jdbcTemplate.queryForObject(sql, Integer.class, userId, txType, productType);
+                return sum != null ? sum : 0;
             });
         } catch (DataAccessException e) {
-            logger.error("Возникла ошибка при обращении к базе данных для получения суммы дохода " +
-                    "с данными для userId={} и ProductType={}", userId, productType);
-            throw new DataAccessLayerException("Ошибка получения суммы дохода при обращении к базе данных", e);
-        }
-    }
-
-    @Override
-    public Integer getSumExpensesByProductType(UUID userId, String productType) {
-        final String key = (userId + " " + productType).toUpperCase();
-        try {
-            return sumCache.get(key, k -> {
-                final String sql = "SELECT COALESCE(SUM(amount), 0) " +
-                        "FROM transactions t INNER JOIN products p ON t.product_id = p.id " +
-                        "WHERE t.user_id = ? AND t.type = 'WITHDRAW' AND p.type = ?";
-                return jdbcTemplate.queryForObject(sql, Integer.class, userId, productType);
-            });
-        } catch (DataAccessException e) {
-            logger.error("Возникла ошибка при обращении к базе данных для получения суммы расхода " +
-                    "с данными userId={} и productType={}", userId, productType);
-            throw new DataAccessLayerException("Ошибка получения суммы расходов при обращении к базе данных", e);
+            logger.error("Ошибка БД при суммировании: userId={}, productType={}, txType={}", userId, productType, txType);
+            throw new DataAccessLayerException("Ошибка суммирования транзакций", e);
         }
     }
 
@@ -90,7 +74,7 @@ public class RecommendationsRepositoryImpl implements RecommendationsRepository 
                 final String sql =
                         "SELECT COUNT(*) " +
                                 "FROM transactions t INNER JOIN products p ON t.product_id = p.id " +
-                                "WHERE t.user_id = ? AND p.type = ?)";
+                                "WHERE t.user_id = ? AND p.type = ?";
                 Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId, productType);
                 return count != null ? count : 0;
             });
@@ -100,20 +84,16 @@ public class RecommendationsRepositoryImpl implements RecommendationsRepository 
         }
     }
 
+
+
     @Override
-    public Integer sumAmountByProductAndTxType(UUID userId, String productType, String transactionsType) {
-        final String key = (userId + " " + productType + " " + transactionsType).toUpperCase();
-        try {
-            return sumCache.get(key, k -> {
-                final String sql = "SELECT COALESCE(SUM(amount), 0) " +
-                        "FROM transactions t INNER JOIN products p ON t.product_id = p.id " +
-                        "WHERE t.user_id = ? AND t.type = ? AND p.type = ?";
-                return jdbcTemplate.queryForObject(sql, Integer.class, userId, transactionsType, productType);
-            });
-        } catch (DataAccessException e) {
-            logger.error("Ошибка при получении суммы по userId={}, productType={}, transactionsType={}", userId, productType, transactionsType);
-            throw new DataAccessLayerException("Ошибка получения суммы транзакций по типу", e);
-        }
+    public Integer getSumIncomesByProductType(UUID userId, String productType) {
+        return sumAmountByProductAndTxType(userId, productType, "DEPOSIT");
+    }
+
+    @Override
+    public Integer getSumExpensesByProductType(UUID userId, String productType) {
+        return sumAmountByProductAndTxType(userId, productType, "WITHDRAW");
     }
 }
 

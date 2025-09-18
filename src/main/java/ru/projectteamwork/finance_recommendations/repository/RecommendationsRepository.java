@@ -11,7 +11,7 @@ public interface RecommendationsRepository {
 
     int countTransactionsByProductType(UUID userId, String productType);
 
-    Integer sumAmountByProductAndTxType(UUID userId, String productType, String txType);
+    int sumAmountByProductAndTxType(UUID userId, String productType, String txType);
 
 
 
