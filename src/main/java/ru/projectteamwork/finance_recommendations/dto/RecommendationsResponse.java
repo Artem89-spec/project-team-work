@@ -2,7 +2,7 @@ package ru.projectteamwork.finance_recommendations.dto;
 
 import java.util.List;
 
-public class    RecommendationsResponse {
+public class RecommendationsResponse {
     private String user_id;
     private List<RecommendationDTO> recommendations;
 
