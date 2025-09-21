@@ -29,7 +29,7 @@ public class DynamicRuleEvaluator {
     }
 
     private boolean evalQuery(DynamicRuleQuery q, UUID userId) {
-        final String type = q.getQuery().trim().toUpperCase();
+        final String type = q.getQuery().getValue().trim().toUpperCase();
         final List<String> args = readArgs(q.getArgumentsJson());
 
         switch (type) {
@@ -51,10 +51,13 @@ public class DynamicRuleEvaluator {
                 return compare(sum, operator, constant);
             }
             case "TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW": {
-                String productType = args.get(0);
-                String operator = args.get(1);
-                int deposits = repository.getSumIncomesByProductType(userId, productType);
-                int withdraws = repository.getSumExpensesByProductType(userId, productType);
+                String productTypeFirst = args.get(0);
+                String transactionsTypeFirst = args.get(1);
+                String operator = args.get(2);
+                String productTypeSecond = args.get(3);
+                String transactionsTypeSecond = args.get(4);
+                int deposits = repository.sumAmountByProductAndTxType(userId, productTypeFirst, transactionsTypeFirst);
+                int withdraws = repository.sumAmountByProductAndTxType(userId, productTypeSecond, transactionsTypeSecond);
                 return compare(deposits, operator, withdraws);
             }
             default:

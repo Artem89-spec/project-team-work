@@ -1,6 +1,7 @@
 package ru.projectteamwork.finance_recommendations.domain;
 
 import jakarta.persistence.*;
+import ru.projectteamwork.finance_recommendations.domain.enums.QueryType;
 
 @Entity
 @Table(name = "dynamic_rule_query")
@@ -8,7 +9,7 @@ public class DynamicRuleQuery {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id") // BIGINT IDENTITY в Liquibase
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -19,7 +20,8 @@ public class DynamicRuleQuery {
     private Integer position;
 
     @Column(name = "query", nullable = false, length = 64)
-    private String query;
+    @Enumerated(EnumType.STRING)
+    private QueryType query;
 
     @Column(name = "arguments", nullable = false, length = 2000)
     private String argumentsJson;
@@ -27,20 +29,47 @@ public class DynamicRuleQuery {
     @Column(name = "negate", nullable = false)
     private boolean negate;
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public DynamicRule getRule() { return rule; }
-    public void setRule(DynamicRule rule) { this.rule = rule; }
+    public DynamicRule getRule() {
+        return rule;
+    }
 
-    public Integer getPosition() { return position; }
-    public void setPosition(Integer position) { this.position = position; }
+    public void setRule(DynamicRule rule) {
+        this.rule = rule;
+    }
 
-    public String getQuery() { return query; }
-    public void setQuery(String query) { this.query = query; }
+    public Integer getPosition() {
+        return position;
+    }
 
-    public String getArgumentsJson() { return argumentsJson; }
-    public void setArgumentsJson(String argumentsJson) { this.argumentsJson = argumentsJson; }
+    public void setPosition(Integer position) {
+        this.position = position;
+    }
 
-    public boolean isNegate() { return negate; }
-    public void setNegate(boolean negate) { this.negate = negate; }
+    public QueryType getQuery() {
+        return query;
+    }
+
+    public void setQuery(QueryType query) {
+        this.query = query;
+    }
+
+    public String getArgumentsJson() {
+        return argumentsJson;
+    }
+
+    public void setArgumentsJson(String argumentsJson) {
+        this.argumentsJson = argumentsJson;
+    }
+
+    public boolean isNegate() {
+        return negate;
+    }
+
+    public void setNegate(boolean negate) {
+        this.negate = negate;
+    }
 }
