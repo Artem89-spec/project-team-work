@@ -38,7 +38,7 @@ public class RecommendationsRepositoryImpl implements RecommendationsRepository 
                 final String sql =
                         "SELECT COALESCE(SUM(t.amount), 0) " +
                                 "FROM transactions t INNER JOIN products p ON t.product_id = p.id " +
-                                "WHERE t.user_id = ? AND UPPER(t.type) = UPPER(?) AND UPPER(p.type) = UPPER(?)";
+                                "WHERE t.user_id = ? AND t.type = ? AND p.type = ?";
                 Integer sum = jdbcTemplate.queryForObject(sql, Integer.class, userId, txType, productType);
                 return sum != null ? sum : 0;
             });
@@ -68,7 +68,7 @@ public class RecommendationsRepositoryImpl implements RecommendationsRepository 
 
     @Override
     public int countTransactionsByProductType(UUID userId, String productType) {
-        final String key = (userId + "  " + productType).toUpperCase();
+        final String key = (userId + " " + productType).toUpperCase();
         try {
             return countCache.get(key, k -> {
                 final String sql =
@@ -83,8 +83,6 @@ public class RecommendationsRepositoryImpl implements RecommendationsRepository 
             throw new DataAccessLayerException("Ошибка подсчёта транзакций", e);
         }
     }
-
-
 
     @Override
     public Integer getSumIncomesByProductType(UUID userId, String productType) {

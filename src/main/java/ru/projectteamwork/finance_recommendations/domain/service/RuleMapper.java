@@ -7,6 +7,7 @@ import ru.projectteamwork.finance_recommendations.api.RuleRequest;
 import ru.projectteamwork.finance_recommendations.api.RuleResponse;
 import ru.projectteamwork.finance_recommendations.domain.DynamicRule;
 import ru.projectteamwork.finance_recommendations.domain.DynamicRuleQuery;
+import ru.projectteamwork.finance_recommendations.domain.enums.QueryType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class RuleMapper {
                 QueryItem qi = request.rule().get(i);
                 DynamicRuleQuery dq = new DynamicRuleQuery();
                 dq.setPosition(i);
-                dq.setQuery(qi.query());
+                dq.setQuery(QueryType.fromString(String.valueOf(qi.query())));
                 dq.setArgumentsJson(writeJson(qi.arguments())); // массив строк -> JSON
                 dq.setNegate(qi.negate());
                 dq.setRule(e);
@@ -61,7 +62,11 @@ public class RuleMapper {
     }
 
     private static List<String> readJsonList(String json) {
-        try { return om.readValue(json, new TypeReference<List<String>>(){}); }
+        try {
+            return om.readValue(
+                    json,
+                    new TypeReference<List<String>>(){
+                    }); }
         catch (Exception ex) { throw new RuntimeException(ex); }
     }
 }
