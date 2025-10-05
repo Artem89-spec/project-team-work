@@ -23,3 +23,11 @@ ALTER TABLE dynamic_rule_query
 ADD CONSTRAINT fk_dynamic_rule_query_rule
 FOREIGN KEY (rule_id)
 REFERENCES dynamic_rule(id);
+
+-- changeset leannann:dynamic-rule-stat
+CREATE TABLE IF NOT EXISTS dynamic_rule_stat (
+    rule_id    UUID PRIMARY KEY,
+    fire_count BIGINT NOT NULL DEFAULT 0,
+    CONSTRAINT fk_dynamic_rule_stat_rule
+        FOREIGN KEY (rule_id) REFERENCES dynamic_rule(id) ON DELETE CASCADE
+);

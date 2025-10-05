@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 import ru.projectteamwork.finance_recommendations.exception.DataAccessLayerException;
 import ru.projectteamwork.finance_recommendations.repository.RecommendationsRepository;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -92,6 +94,19 @@ public class RecommendationsRepositoryImpl implements RecommendationsRepository 
     @Override
     public Integer getSumExpensesByProductType(UUID userId, String productType) {
         return sumAmountByProductAndTxType(userId, productType, "WITHDRAW");
+    }
+
+    @Override
+    public void clearCaches() {
+        long s1 = sumCache.estimatedSize();
+        long s2 = existsCache.estimatedSize();
+        long s3 = countCache.estimatedSize();
+
+        sumCache.invalidateAll();
+        existsCache.invalidateAll();
+        countCache.invalidateAll();
+
+        logger.info("Recommendation caches cleared (sum={}, exists={}, count={})", s1, s2, s3);
     }
 }
 
