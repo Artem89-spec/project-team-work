@@ -1,7 +1,7 @@
 package ru.projectteamwork.finance_recommendations.domain.service;
 
 import ru.projectteamwork.finance_recommendations.domain.DynamicRuleStat;
-import ru.projectteamwork.finance_recommendations.domain.repo.DynamicRuleStatRepository;
+import ru.projectteamwork.finance_recommendations.repository.DynamicRuleStatRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;

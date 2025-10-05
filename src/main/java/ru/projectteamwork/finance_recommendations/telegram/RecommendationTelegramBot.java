@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.projectteamwork.finance_recommendations.service.RecommendationsService;
 
 @Component
-public class RecommendationBot extends TelegramLongPollingBot {
+public class RecommendationTelegramBot extends TelegramLongPollingBot {
 
     private final RecommendationsService recommendationsService;
 
@@ -16,7 +16,7 @@ public class RecommendationBot extends TelegramLongPollingBot {
     private final String botToken;
 
     // 👇 конструктор, где Spring внедрит зависимости
-    public RecommendationBot(
+    public RecommendationTelegramBot(
             RecommendationsService recommendationsService,
             @Value("${telegram.bot.username}") String botUsername,
             @Value("${telegram.bot.token}") String botToken) {

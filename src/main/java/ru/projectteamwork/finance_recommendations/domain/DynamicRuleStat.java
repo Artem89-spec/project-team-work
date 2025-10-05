@@ -11,33 +11,22 @@ public class DynamicRuleStat {
     @Column(name = "rule_id", nullable = false)
     private UUID ruleId;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "rule_id", nullable = false)
-    private DynamicRule rule;
-
     @Column(name = "fire_count", nullable = false)
     private long fireCount = 0L;
 
-    protected DynamicRuleStat() {
-    }
+    public DynamicRuleStat() {}
 
-    public DynamicRuleStat(DynamicRule rule) {
-        this.rule = rule;
-        this.ruleId = rule.getId();
+    public DynamicRuleStat(UUID ruleId) {
+        this.ruleId = ruleId;
+        this.fireCount = 0L;
     }
 
     public UUID getRuleId() {
         return ruleId;
     }
 
-    public DynamicRule getRule() {
-        return rule;
-    }
-
-    public void setRule(DynamicRule rule) {
-        this.rule = rule;
-        this.ruleId = rule != null ? rule.getId() : null;
+    public void setRuleId(UUID ruleId) {
+        this.ruleId = ruleId;
     }
 
     public long getFireCount() {
@@ -48,7 +37,7 @@ public class DynamicRuleStat {
         this.fireCount = fireCount;
     }
 
-    public void increment() {
+    public void inc() {
         this.fireCount++;
     }
 }
