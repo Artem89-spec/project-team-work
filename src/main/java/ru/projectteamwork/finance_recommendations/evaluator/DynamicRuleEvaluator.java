@@ -55,12 +55,16 @@ public class DynamicRuleEvaluator {
                 return compare(sum, operator, constant);
             }
             case "TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW": {
-                requireArgs(type, args, 2);
-                String productType = args.get(0);
-                String operator = args.get(1); //
+                requireArgs(type, args, 5);
+                String productTypeFirst = args.get(0);
+                String transactionsTypeFirst = args.get(1);
+                String operator = args.get(2);
+                String productTypeSecond = args.get(3);
+                String transactionsTypeSecond = args.get(4);
 
-                int deposits  = repository.sumAmountByProductAndTxType(userId, productType, "DEPOSIT");
-                int withdraws = repository.sumAmountByProductAndTxType(userId, productType, "WITHDRAW");
+                int deposits = repository.sumAmountByProductAndTxType(userId, productTypeFirst, transactionsTypeFirst);
+                int withdraws = repository.sumAmountByProductAndTxType(userId, productTypeSecond, transactionsTypeSecond);
+
                 return compare(deposits, operator, withdraws);
             }
             default:
@@ -79,18 +83,19 @@ public class DynamicRuleEvaluator {
 
     private boolean compare(int left, String operator, int right) {
         return switch (operator) {
-            case ">"  -> left > right;
-            case "<"  -> left < right;
-            case "="  -> left == right;
+            case ">" -> left > right;
+            case "<" -> left < right;
+            case "=" -> left == right;
             case ">=" -> left >= right;
             case "<=" -> left <= right;
-            default   -> throw new IllegalArgumentException("Неизвестный оператор: " + operator);
+            default -> throw new IllegalArgumentException("Неизвестный оператор: " + operator);
         };
     }
 
     private static List<String> readArgs(String json) {
         try {
-            return OBJECT_MAPPER.readValue(json, new TypeReference<List<String>>() {});
+            return OBJECT_MAPPER.readValue(json, new TypeReference<List<String>>() {
+            });
         } catch (Exception e) {
             throw new RuntimeException("Недопустимые аргументы JSON: " + json, e);
         }
