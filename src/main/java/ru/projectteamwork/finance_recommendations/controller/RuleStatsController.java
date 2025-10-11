@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.projectteamwork.finance_recommendations.domain.DynamicRule;
-import ru.projectteamwork.finance_recommendations.domain.DynamicRuleStat;
 import ru.projectteamwork.finance_recommendations.domain.service.RuleStatService;
 import ru.projectteamwork.finance_recommendations.repository.DynamicRuleStatRepository;
 import ru.projectteamwork.finance_recommendations.domain.service.RuleService;

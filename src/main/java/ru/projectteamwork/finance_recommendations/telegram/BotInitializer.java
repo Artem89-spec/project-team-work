@@ -11,7 +11,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @Component
 public class BotInitializer {
     @Autowired
-    private final LongPollingBot telegramBot; // ваш бин бота
+    private final LongPollingBot telegramBot;
 
     public BotInitializer(LongPollingBot telegramBot) {
         this.telegramBot = telegramBot;
