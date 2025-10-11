@@ -1,5 +1,7 @@
 package ru.projectteamwork.finance_recommendations.domain.service;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.projectteamwork.finance_recommendations.api.RuleRequest;
@@ -21,22 +23,26 @@ public class RuleService {
     }
 
     @Transactional
+    @Cacheable(cacheNames = "ruleCache", key = "#req")
     public RuleResponse create(RuleRequest req) {
         DynamicRule saved = repo.save(RuleMapper.toEntity(req));
         return RuleMapper.toResponse(saved);
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "ruleCache", key = "'list'")
     public List<RuleResponse> list() {
         return repo.findAll().stream().map(RuleMapper::toResponse).collect(Collectors.toList());
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "ruleCache", allEntries = true)
     public void deleteByProductId(UUID productId) {
         repo.deleteByProductId(productId);
     }
 
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "ruleCache", key = "'allEntities'")
     public java.util.List<DynamicRule> findAllEntities() {
         return repo.findAll();
     }

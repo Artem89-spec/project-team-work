@@ -3,21 +3,19 @@ package ru.projectteamwork.finance_recommendations.config;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import org.telegram.telegrambots.util.WebhookUtils;
-import ru.projectteamwork.finance_recommendations.telegram.RecommendationTelegramBot;
+
 
 import javax.sql.DataSource;
 
+@Configuration
+@EnableCaching
 public class TelegramBotConfig {
 
-    @Bean("recommendationsDataSource")
+    @Bean("recommendationsDataSourceBot")
     public DataSource recommendationsDataSource(
             @Value("${recommendations.db.url}") String url,
             @Value("${recommendations.db.username:sa}") String user,
@@ -32,7 +30,7 @@ public class TelegramBotConfig {
         return ds;
     }
 
-    @Bean("recommendationsJdbcTemplate")
+    @Bean("recommendationsJdbcTemplateBot")
     public JdbcTemplate recommendationsJdbcTemplate(
             @Qualifier("recommendationsDataSource") DataSource dataSource
     ) {

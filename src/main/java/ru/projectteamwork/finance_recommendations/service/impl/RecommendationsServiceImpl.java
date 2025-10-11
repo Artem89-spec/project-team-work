@@ -1,5 +1,6 @@
 package ru.projectteamwork.finance_recommendations.service.impl;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.projectteamwork.finance_recommendations.domain.service.RuleService;
 import ru.projectteamwork.finance_recommendations.domain.service.RuleStatService;
@@ -29,6 +30,7 @@ public class RecommendationsServiceImpl implements RecommendationsService {
     }
 
     @Override
+    @Cacheable(value = "recommendationsCache", key = "#userId")
     public List<RecommendationDTO> getRecommendationsForUser(String userId) {
         List<RecommendationDTO> staticRecommendations = new ArrayList<>();
         List<RecommendationDTO> dynamicRecommendations = new ArrayList<>();

@@ -2,6 +2,7 @@ package ru.projectteamwork.finance_recommendations.evaluator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.cache.annotation.Cacheable;
 import ru.projectteamwork.finance_recommendations.domain.DynamicRule;
 import ru.projectteamwork.finance_recommendations.domain.DynamicRuleQuery;
 import ru.projectteamwork.finance_recommendations.repository.RecommendationsRepository;
@@ -18,6 +19,7 @@ public class DynamicRuleEvaluator {
         this.repository = repository;
     }
 
+    @Cacheable(cacheNames = "ruleEvaluationCache", key = "#rule.id + '-' + #userIdStr")
     public boolean evaluate(DynamicRule rule, String userIdStr) {
         final UUID userId = UUID.fromString(userIdStr);
         for (DynamicRuleQuery query : rule.getQueries()) {
