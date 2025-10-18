@@ -51,17 +51,35 @@ public class DynamicRule {
         }
     }
 
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
+    public UUID getId() {
+        return id;
+    }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-    public UUID getProductId() { return productId; }
-    public void setProductId(UUID productId) { this.productId = productId; }
+    public UUID getProductId() {
+        return productId;
+    }
+    public void setProductId(UUID productId) {
+        this.productId = productId;
+    }
 
-    public String getProductName() { return productName; }
-    public void setProductName(String productName) { this.productName = productName; }
+    public String getProductName() {
+        return productName;
+    }
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
 
-    public String getProductText() { return productText; }
-    public void setProductText(String productText) { this.productText = productText; }
+    public String getProductText() {
+        return productText;
+    }
+    public void setProductText(String productText) {
+        this.productText = productText;
+    }
 
-    public List<DynamicRuleQuery> getQueries() { return queries; }
+    public List<DynamicRuleQuery> getQueries() {
+        return queries;
+    }
 }

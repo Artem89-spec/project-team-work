@@ -1,6 +1,7 @@
 package ru.projectteamwork.finance_recommendations.repository.impl;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.projectteamwork.finance_recommendations.repository.UserLookupRepository;
@@ -19,6 +20,7 @@ public class UserLookupRepositoryImpl implements UserLookupRepository {
     }
 
     @Override
+    @Cacheable(cacheNames = "userIdCache", key = "#fullName")
     public Optional<UUID> findSingleUserIdByFullName(String fullName) {
         String sql = """
             SELECT u.id

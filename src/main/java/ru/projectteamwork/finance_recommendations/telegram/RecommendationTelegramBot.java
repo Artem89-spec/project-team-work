@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.util.WebhookUtils;
 import ru.projectteamwork.finance_recommendations.service.RecommendationsService;
 
 @Component
@@ -74,6 +76,20 @@ public class RecommendationTelegramBot extends TelegramLongPollingBot {
                     .build());
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void clearWebhook() throws TelegramApiRequestException {
+        try {
+            WebhookUtils.clearWebhook(this);
+        } catch (TelegramApiRequestException e) {
+            // Если ошибка 404, значит webhook уже отсутствует — игнорируем
+            if (e.getMessage() != null && e.getMessage().contains("404")) {
+                // Webhook уже не установлен, ничего не делаем
+            } else {
+                // Другие ошибки — логируем или пробрасываем
+                e.printStackTrace();
+            }
         }
     }
 }
