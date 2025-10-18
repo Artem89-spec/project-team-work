@@ -13,6 +13,6 @@ public interface RecommendationsRepository {
 
     int sumAmountByProductAndTxType(UUID userId, String productType, String txType);
 
-
+    void clearCaches();
 
 }

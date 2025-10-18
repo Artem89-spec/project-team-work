@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -30,7 +31,9 @@ public class RecommendationsRepositoryImpl implements RecommendationsRepository 
         this.jdbcTemplate = jdbcTemplate;
     }
 
+
     @Override
+    @Cacheable(cacheNames = "recommendationsCache", key = "#userId + '_' + #productType + '_' + #txType")
     public int sumAmountByProductAndTxType(UUID userId, String productType, String txType) {
         final String key = (userId + " " + productType + " " + txType).toUpperCase();
         try {
@@ -49,6 +52,7 @@ public class RecommendationsRepositoryImpl implements RecommendationsRepository 
     }
 
     @Override
+    @Cacheable(cacheNames = "recommendationsCache", key = "#userId + '_' + #productType")
     public boolean userHasProductType(UUID userId, String productType) {
         final String key = (userId + " " + productType).toUpperCase();
         try {
@@ -67,6 +71,7 @@ public class RecommendationsRepositoryImpl implements RecommendationsRepository 
     }
 
     @Override
+    @Cacheable(cacheNames = "recommendationsCache", key = "#userId + '_' + #productType")
     public int countTransactionsByProductType(UUID userId, String productType) {
         final String key = (userId + " " + productType).toUpperCase();
         try {
@@ -92,6 +97,19 @@ public class RecommendationsRepositoryImpl implements RecommendationsRepository 
     @Override
     public Integer getSumExpensesByProductType(UUID userId, String productType) {
         return sumAmountByProductAndTxType(userId, productType, "WITHDRAW");
+    }
+
+    @Override
+    public void clearCaches() {
+        long s1 = sumCache.estimatedSize();
+        long s2 = existsCache.estimatedSize();
+        long s3 = countCache.estimatedSize();
+
+        sumCache.invalidateAll();
+        existsCache.invalidateAll();
+        countCache.invalidateAll();
+
+        logger.info("Recommendation caches cleared (sum={}, exists={}, count={})", s1, s2, s3);
     }
 }
 
