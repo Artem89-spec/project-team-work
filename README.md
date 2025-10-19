@@ -37,6 +37,7 @@
 ```bash
 git clone https://github.com/Artem89-spec/project-team-work.git
 cd project-team-work
+git checkout -b develop
 ```
 
 ---
