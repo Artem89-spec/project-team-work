@@ -227,7 +227,6 @@ GET /rule/stats
 ```
 
 ---
-
 ## 🧾 Лицензия
 
 MIT License © 2025 Project TeamWork  
