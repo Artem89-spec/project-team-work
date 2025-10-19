@@ -9,18 +9,61 @@ import ru.projectteamwork.finance_recommendations.repository.RecommendationsRepo
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Правило формирования рекомендации по продукту «Простой кредит».
+ * <p>
+ * Данный класс реализует логику проверки, подходит ли пользователю предложение
+ * оформить кредитный продукт, исходя из его транзакционной активности
+ * </p>
+ *
+ * <h3>Условия рекомендации:</h3>
+ * <ul>
+ *   <li>У пользователя <b>нет активных кредитных продуктов</b>;</li>
+ *   <li>Сумма доходов по дебетовым продуктам больше суммы расходов;</li>
+ *   <li>Суммарные расходы по дебетовым продуктам превышают установленный лимит (100 000 ₽);</li>
+ * </ul>
+ *
+ * <p>
+ * Если все условия выполняются, пользователю возвращается объект {@link RecommendationDTO}
+ * с предложением оформить кредит под названием «Простой кредит»
+ * </p>
+ *
+ * <h3>Пример использования:</h3>
+ * <pre>
+ * CreditRecommendationRule rule = new CreditRecommendationRule(repository);
+ * Optional&lt;RecommendationDTO&gt; recommendation = rule.checkRule(userId);
+ * recommendation.ifPresent(System.out::println);
+ * </pre>
+ *
+ * @see ru.projectteamwork.finance_recommendations.rules.RecommendationsRuleSet
+ * @see ru.projectteamwork.finance_recommendations.dto.RecommendationDTO
+ * @see ru.projectteamwork.finance_recommendations.repository.RecommendationsRepository
+ */
 @Component
 public class CreditRecommendationRule implements RecommendationsRuleSet {
     private final RecommendationsRepository repository;
     private final Logger logger = LoggerFactory.getLogger(CreditRecommendationRule.class);
 
+    /**
+     * Конструктор правила рекомендаций
+     *
+     * @param repository репозиторий, предоставляющий доступ к данным о продуктах и транзакциях пользователей
+     */
     public CreditRecommendationRule(RecommendationsRepository repository) {
         this.repository = repository;
     }
 
+    /**
+     * Проверяет, соответствует ли пользователь условиям для получения рекомендации
+     * по кредитному продукту
+     *
+     * @param userId строковое представление {@link UUID} пользователя
+     * @return {@link Optional} с {@link RecommendationDTO}, если условия выполнены;
+     *         {@link Optional#empty()} — если нет
+     */
     @Override
     public Optional<RecommendationDTO> checkRule(String userId) {
-        UUID userUUID ;
+        UUID userUUID;
         try {
             userUUID = UUID.fromString(userId);
         } catch (IllegalArgumentException e) {

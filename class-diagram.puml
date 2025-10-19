@@ -1,0 +1,67 @@
+@startuml
+title Finance Recommendations - Class Diagram
+
+package "controller" {
+    class RecommendationsController
+    class DynamicRecommendationsController
+    class ManagementController
+    class InfoController
+    class RuleController
+    class RuleStatsController
+}
+
+package "service" {
+    interface RecommendationsService
+    class RecommendationsServiceImpl
+    class RuleService
+    class RuleStatService
+}
+
+package "rules" {
+    interface RecommendationsRuleSet
+    class CreditRecommendationRule
+    class InvestRecommendationRule
+    class TopSavingRecommendationRule
+}
+
+package "repository" {
+    interface RecommendationsRepository
+    class RecommendationsRepositoryImpl
+    interface UserLookupRepository
+    class UserLookupRepositoryImpl
+    interface DynamicRuleStatRepository
+}
+
+package "domain" {
+    class DynamicRule
+    class DynamicRuleQuery
+    class DynamicRuleStat
+    enum QueryType
+}
+
+package "evaluator" {
+    class DynamicRuleEvaluator
+}
+
+RecommendationsController --> RecommendationsServiceImpl
+DynamicRecommendationsController --> RecommendationsServiceImpl
+ManagementController --> (Cache)
+RuleController --> RuleService
+RuleStatsController --> RuleService
+RuleStatsController --> RuleStatService
+
+RecommendationsServiceImpl --> RecommendationsRepositoryImpl
+RecommendationsServiceImpl --> RuleService
+RecommendationsServiceImpl --> RuleStatService
+RecommendationsServiceImpl --> DynamicRuleEvaluator
+
+RuleService --> DynamicRuleRepository
+RuleStatService --> DynamicRuleStatRepository
+
+RecommendationsRepositoryImpl --> (JdbcTemplate)
+UserLookupRepositoryImpl --> (JdbcTemplate)
+
+DynamicRuleEvaluator --> RecommendationsRepositoryImpl
+DynamicRuleEvaluator --> DynamicRule
+
+@enduml
