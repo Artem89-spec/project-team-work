@@ -35,8 +35,8 @@
 ### 1️⃣ Клонировать репозиторий
 
 ```bash
-git clone https://github.com/your-org/finance-recommendations.git
-cd finance-recommendations
+git clone https://github.com/Artem89-spec/project-team-work.git
+cd project-team-work
 ```
 
 ---
