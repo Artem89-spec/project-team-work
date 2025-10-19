@@ -9,15 +9,30 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.util.WebhookUtils;
 import ru.projectteamwork.finance_recommendations.service.RecommendationsService;
 
+/**
+ * Класс Telegram-бота, реализующий получение и отправку финансовых рекомендаций пользователям.
+ * <p>
+ * Бот принимает сообщения в Telegram, анализирует команды и обращается к сервису {@link RecommendationsService}
+ * для получения рекомендаций по имени пользователя.
+ * </p>
+ * <p>
+ * Использует режим long polling для обработки входящих сообщений.
+ * </p>
+ */
 @Component
 public class RecommendationTelegramBot extends TelegramLongPollingBot {
 
     private final RecommendationsService recommendationsService;
-
     private final String botUsername;
     private final String botToken;
 
-    // 👇 конструктор, где Spring внедрит зависимости
+    /**
+     * Конструктор Telegram-бота.
+     *
+     * @param recommendationsService сервис, отвечающий за получение рекомендаций
+     * @param botUsername имя Telegram-бота, заданное в настройках приложения
+     * @param botToken токен доступа к Telegram Bot API
+     */
     public RecommendationTelegramBot(
             RecommendationsService recommendationsService,
             @Value("${telegram.bot.username}") String botUsername,
@@ -27,16 +42,35 @@ public class RecommendationTelegramBot extends TelegramLongPollingBot {
         this.botToken = botToken;
     }
 
+    /**
+     * Возвращает имя Telegram-бота
+     *
+     * @return имя бота
+     */
     @Override
     public String getBotUsername() {
         return botUsername;
     }
 
+    /**
+     * Возвращает токен доступа Telegram-бота
+     *
+     * @return токен доступа
+     */
     @Override
     public String getBotToken() {
         return botToken;
     }
 
+    /**
+     * Обрабатывает входящие сообщения от пользователей Telegram
+     * <p>
+     * Поддерживает команду <b>/recommend Имя Фамилия</b> для получения рекомендаций
+     * В ответ бот отправляет список рекомендаций или сообщение об ошибке, если данные не найдены
+     * </p>
+     *
+     * @param update объект обновления, содержащий входящее сообщение
+     */
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -68,6 +102,12 @@ public class RecommendationTelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     * Отправляет текстовое сообщение пользователю в Telegram-чат
+     *
+     * @param chatId идентификатор чата
+     * @param text текст сообщения
+     */
     private void send(String chatId, String text) {
         try {
             execute(SendMessage.builder()
@@ -79,15 +119,21 @@ public class RecommendationTelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     * Очищает webhook (если ранее был установлен), чтобы бот мог работать в режиме long polling
+     * <p>
+     * Метод используется чтобы при необходимости принудительно удалить старую конфигурацию webhook
+     * </p>
+     *
+     * @throws TelegramApiRequestException если возникает ошибка при удалении webhook
+     */
     public void clearWebhook() throws TelegramApiRequestException {
         try {
             WebhookUtils.clearWebhook(this);
         } catch (TelegramApiRequestException e) {
-            // Если ошибка 404, значит webhook уже отсутствует — игнорируем
             if (e.getMessage() != null && e.getMessage().contains("404")) {
-                // Webhook уже не установлен, ничего не делаем
+                // Webhook уже отсутствует — игнорируем
             } else {
-                // Другие ошибки — логируем или пробрасываем
                 e.printStackTrace();
             }
         }
